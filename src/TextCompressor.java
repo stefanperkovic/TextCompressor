@@ -21,17 +21,41 @@
  *  = 43.54% compression ratio!
  ******************************************************************************/
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *  The {@code TextCompressor} class provides static methods for compressing
  *  and expanding natural language through textfile input.
  *
- *  @author Zach Blick, YOUR NAME HERE
+ *  @author Zach Blick, Stefan Perkovic
  */
 public class TextCompressor {
 
     private static void compress() {
+        String text = BinaryStdIn.readString();
 
-        // TODO: Complete the compress() method
+        String[] words = text.split(" ");
+        String[] foundWords = new String[words.length];
+        int[] occurrences = new int[words.length];
+        int uniqueCount = 0;
+
+        for (int i = 0; i < words.length; i++){
+            boolean found = false;
+
+            for(int j = 0; j < uniqueCount; j++){
+                if(foundWords[j].equals(words[i])){
+                    occurrences[j]++;
+                    found = true;
+
+
+                }
+
+
+            }
+
+
+        }
 
         BinaryStdOut.close();
     }
