@@ -40,21 +40,20 @@ public class TextCompressor {
         int[] occurrences = new int[words.length];
         int uniqueCount = 0;
 
-        for (int i = 0; i < words.length; i++){
+        for (String word : words){
             boolean found = false;
 
             for(int j = 0; j < uniqueCount; j++){
-                if(foundWords[j].equals(words[i])){
+                if(foundWords[j].equals(word)){
                     occurrences[j]++;
                     found = true;
-
-
                 }
-
-
             }
-
-
+            if(!found){
+                foundWords[uniqueCount] = word;
+                occurrences[uniqueCount] = 1;
+                uniqueCount++;
+            }
         }
 
         BinaryStdOut.close();
