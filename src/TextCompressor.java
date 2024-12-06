@@ -56,6 +56,25 @@ public class TextCompressor {
             }
         }
 
+        String[] mostCommonWords = new String[10];
+        for(int i = 0; i < 10; i++){
+            int maxIndex = 0;
+            for (int j = 1; j < uniqueCount; j++) {
+                if (occurrences[j] > occurrences[maxIndex]) {
+                    maxIndex = j;
+                }
+            }
+            mostCommonWords[i] = foundWords[maxIndex];
+            // Make it so that it will always be the smallest since its already added
+            occurrences[maxIndex] = -10000;
+        }
+
+
+
+
+
+
+
         BinaryStdOut.close();
     }
 
