@@ -34,47 +34,31 @@ public class TextCompressor {
 
     private static void compress() {
         String text = BinaryStdIn.readString();
+        int index = 0;
+        TST tst = new TST();
 
-        String[] words = text.split(" ");
-        String[] foundWords = new String[words.length];
-        int[] occurrences = new int[words.length];
-        int uniqueCount = 0;
-
-        for (String word : words){
-            boolean found = false;
-
-            for(int j = 0; j < uniqueCount; j++){
-                if(foundWords[j].equals(word)){
-                    occurrences[j]++;
-                    found = true;
-                }
-            }
-            if(!found){
-                foundWords[uniqueCount] = word;
-                occurrences[uniqueCount] = 1;
-                uniqueCount++;
-            }
+        for (int i = 0; i < 256; i++){
+            tst.insert("" + (char)i, i);
         }
+        int startCode = 256;
+        int maxCode = 4096;
 
-        String[] mostCommonWords = new String[10];
-        for(int i = 0; i < 10; i++){
-            int maxIndex = 0;
-            for (int j = 1; j < uniqueCount; j++) {
-                if (occurrences[j] > occurrences[maxIndex]) {
-                    maxIndex = j;
-                }
-            }
-            mostCommonWords[i] = foundWords[maxIndex];
-            // Make it so that it will always be the smallest since its already added
-            occurrences[maxIndex] = -10000;
+
+        while (index < text.length()){
+            String prefix = tst.getLongestPrefix(text);
+            int codeword = tst.lookup(prefix);
+
+            BinaryStdOut.write(codeword, 12);
+
+            
+
         }
 
 
 
 
 
-
-
+        BinaryStdOut.write(256, 12);
         BinaryStdOut.close();
     }
 
