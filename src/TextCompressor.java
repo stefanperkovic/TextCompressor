@@ -40,20 +40,23 @@ public class TextCompressor {
         for (int i = 0; i < 256; i++){
             tst.insert("" + (char)i, i);
         }
-        int startCode = 256;
+        int code = 256;
         int maxCode = 4096;
 
-
-        while (index < text.length()){
+        while (!text.isEmpty()){
             String prefix = tst.getLongestPrefix(text);
             int codeword = tst.lookup(prefix);
 
             BinaryStdOut.write(codeword, 12);
 
-            
+            int prefixLength = prefix.length();
+            if (prefixLength < text.length() && code < maxCode){
+                tst.insert(text.substring(0, prefixLength + 1), code++);
+            }
+
+            text = text.substring(prefixLength);
 
         }
-
 
 
 
@@ -65,6 +68,9 @@ public class TextCompressor {
     private static void expand() {
 
         // TODO: Complete the expand() method
+
+
+
 
         BinaryStdOut.close();
     }
