@@ -58,16 +58,38 @@ public class TextCompressor {
 
         }
 
-
-
-
         BinaryStdOut.write(256, 12);
         BinaryStdOut.close();
     }
 
     private static void expand() {
+        String[] codeTable = new String[4096];
+        for (int i = 0; i < 256; i++){
+            codeTable[i] = "" + (char) i;
+        }
 
-        // TODO: Complete the expand() method
+        codeTable[256] = "";
+        int highestCode = 257;
+
+        String currentString;
+
+        while(true){
+            int currentCode = BinaryStdIn.readInt(12);
+            if (currentCode == 256){
+                break;
+            }
+
+
+            if (currentCode < highestCode){
+                currentString = codeTable[currentCode];
+            }
+            else if(currentCode == highestCode){
+                currentString = currentString +
+
+            }
+
+
+        }
 
 
 
