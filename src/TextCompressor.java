@@ -34,7 +34,6 @@ public class TextCompressor {
 
     private static void compress() {
         String text = BinaryStdIn.readString();
-        int index = 0;
         TST tst = new TST();
 
         for (int i = 0; i < 256; i++){
@@ -43,18 +42,17 @@ public class TextCompressor {
         int code = 256;
         int maxCode = 4096;
 
-        while (!text.isEmpty()){
-            String prefix = tst.getLongestPrefix(text);
-            int codeword = tst.lookup(prefix);
+        int index = 0;
 
+        while (index < text.length()){
+            String prefix = tst.getLongestPrefix(text, index);
+            int codeword = tst.lookup(prefix);
             BinaryStdOut.write(codeword, 12);
 
             int prefixLength = prefix.length();
-            if (prefixLength < text.length() && code < maxCode){
-                tst.insert(text.substring(0, prefixLength + 1), code++);
+            if (index + prefixLength < text.length() && code < maxCode){
+                tst.insert(prefix + text.charAt(index + prefixLength), code++);
             }
-
-            text = text.substring(prefixLength);
 
         }
 
@@ -71,8 +69,19 @@ public class TextCompressor {
         codeTable[256] = "";
         int highestCode = 257;
 
-        String currentString;
+        String currentString = "";
 
+        int previousCode = BinaryStdIn.readInt(12);
+
+        if (previousCode == 256){
+            BinaryStdOut.close();
+            return;
+        }
+
+        currentString = codeTable[previousCode];
+        BinaryStdOut.write(currentString);
+
+        String newString = "";
         while(true){
             int currentCode = BinaryStdIn.readInt(12);
             if (currentCode == 256){
@@ -81,13 +90,20 @@ public class TextCompressor {
 
 
             if (currentCode < highestCode){
-                currentString = codeTable[currentCode];
+                newString = codeTable[currentCode];
             }
             else if(currentCode == highestCode){
-                currentString = currentString +
+                newString = currentString + currentString.charAt(0);
 
             }
 
+            BinaryStdOut.write(newString);
+
+            if (highestCode < 4096) {
+                codeTable[highestCode++] = currentString + newString.charAt(0);
+            }
+
+            currentString = newString;
 
         }
 
