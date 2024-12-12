@@ -32,36 +32,47 @@ import java.util.Map;
  */
 public class TextCompressor {
 
+
+    // Compress input text and outputs codes corresponding to prefix's
     private static void compress() {
         String text = BinaryStdIn.readString();
         TST tst = new TST();
 
+        // Initialize the TST with the base codes
         for (int i = 0; i < 256; i++){
             tst.insert("" + (char)i, i);
         }
-        int code = 256;
+        int code = 257;
         int maxCode = 4096;
 
         int index = 0;
 
+        // Process the input text one prefix at a time
         while (index < text.length()){
+            // Find, retrieve, and write code for longest prefix
             String prefix = tst.getLongestPrefix(text, index);
             int codeword = tst.lookup(prefix);
             BinaryStdOut.write(codeword, 12);
 
+            // If within bounds add a code the next unique substring
             int prefixLength = prefix.length();
             if (index + prefixLength < text.length() && code < maxCode){
                 tst.insert(prefix + text.charAt(index + prefixLength), code++);
             }
 
+            index+= prefixLength;
         }
 
         BinaryStdOut.write(256, 12);
         BinaryStdOut.close();
     }
 
+    // Expand compressed input returning text to original state
     private static void expand() {
+        // Creates a reverse lookup table for codes to strings
         String[] codeTable = new String[4096];
+
+        // Initialize the table with single-character strings
         for (int i = 0; i < 256; i++){
             codeTable[i] = "" + (char) i;
         }
@@ -69,29 +80,27 @@ public class TextCompressor {
         codeTable[256] = "";
         int highestCode = 257;
 
-        String currentString = "";
-
-        int previousCode = BinaryStdIn.readInt(12);
-
-        if (previousCode == 256){
+        // Outputs first string outside loop in order to be able to handle immediate edge case
+        int currentCode = BinaryStdIn.readInt(12);
+        if (currentCode == 256) {
             BinaryStdOut.close();
             return;
         }
-
-        currentString = codeTable[previousCode];
+        String currentString = codeTable[currentCode];
         BinaryStdOut.write(currentString);
 
         String newString = "";
+        // Goes until the file ends and outputs each code's string
         while(true){
-            int currentCode = BinaryStdIn.readInt(12);
+            currentCode = BinaryStdIn.readInt(12);
             if (currentCode == 256){
                 break;
             }
 
-
             if (currentCode < highestCode){
                 newString = codeTable[currentCode];
             }
+            // Edge-case where code is for current string being defined
             else if(currentCode == highestCode){
                 newString = currentString + currentString.charAt(0);
 
@@ -99,6 +108,7 @@ public class TextCompressor {
 
             BinaryStdOut.write(newString);
 
+            // Add new string to table if there's room
             if (highestCode < 4096) {
                 codeTable[highestCode++] = currentString + newString.charAt(0);
             }
@@ -106,9 +116,6 @@ public class TextCompressor {
             currentString = newString;
 
         }
-
-
-
 
         BinaryStdOut.close();
     }
