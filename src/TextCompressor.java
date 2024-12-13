@@ -32,6 +32,9 @@ import java.util.Map;
  */
 public class TextCompressor {
 
+    private final static int BIT_OUTPUT = 12;
+    private final static int EOF = 256;
+    private final static int MAX_CODE = 4096;
 
     // Compress input text and outputs codes corresponding to prefix's
     private static void compress() {
@@ -39,11 +42,10 @@ public class TextCompressor {
         TST tst = new TST();
 
         // Initialize the TST with the base codes
-        for (int i = 0; i < 256; i++){
+        for (int i = 0; i < EOF; i++){
             tst.insert("" + (char)i, i);
         }
-        int code = 257;
-        int maxCode = 4096;
+        int code = EOF + 1;
 
         int index = 0;
 
@@ -52,37 +54,37 @@ public class TextCompressor {
             // Find, retrieve, and write code for longest prefix
             String prefix = tst.getLongestPrefix(text, index);
             int codeword = tst.lookup(prefix);
-            BinaryStdOut.write(codeword, 12);
+            BinaryStdOut.write(codeword, BIT_OUTPUT);
 
             // If within bounds add a code the next unique substring
             int prefixLength = prefix.length();
-            if (index + prefixLength < text.length() && code < maxCode){
+            if (index + prefixLength < text.length() && code < MAX_CODE){
                 tst.insert(prefix + text.charAt(index + prefixLength), code++);
             }
 
             index+= prefixLength;
         }
 
-        BinaryStdOut.write(256, 12);
+        BinaryStdOut.write(EOF, BIT_OUTPUT);
         BinaryStdOut.close();
     }
 
     // Expand compressed input returning text to original state
     private static void expand() {
         // Creates a reverse lookup table for codes to strings
-        String[] codeTable = new String[4096];
+        String[] codeTable = new String[MAX_CODE];
 
         // Initialize the table with single-character strings
-        for (int i = 0; i < 256; i++){
+        for (int i = 0; i < EOF; i++){
             codeTable[i] = "" + (char) i;
         }
 
-        codeTable[256] = "";
-        int highestCode = 257;
+        codeTable[EOF] = "";
+        int highestCode = EOF + 1;
 
         // Outputs first string outside loop in order to be able to handle immediate edge case
-        int currentCode = BinaryStdIn.readInt(12);
-        if (currentCode == 256) {
+        int currentCode = BinaryStdIn.readInt(BIT_OUTPUT);
+        if (currentCode == EOF) {
             BinaryStdOut.close();
             return;
         }
@@ -91,8 +93,8 @@ public class TextCompressor {
 
         String newString = "";
         // Goes until the file ends and outputs each code's string
-        while(currentCode != 256){
-            currentCode = BinaryStdIn.readInt(12);
+        while(currentCode != EOF){
+            currentCode = BinaryStdIn.readInt(BIT_OUTPUT);
 
             if (currentCode < highestCode){
                 newString = codeTable[currentCode];
@@ -106,7 +108,7 @@ public class TextCompressor {
             BinaryStdOut.write(newString);
 
             // Add new string to table if there's room
-            if (highestCode < 4096) {
+            if (highestCode < MAX_CODE) {
                 codeTable[highestCode++] = currentString + newString.charAt(0);
             }
 
