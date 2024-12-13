@@ -91,11 +91,8 @@ public class TextCompressor {
 
         String newString = "";
         // Goes until the file ends and outputs each code's string
-        while(true){
+        while(currentCode != 256){
             currentCode = BinaryStdIn.readInt(12);
-            if (currentCode == 256){
-                break;
-            }
 
             if (currentCode < highestCode){
                 newString = codeTable[currentCode];
